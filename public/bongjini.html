@@ -162,36 +162,47 @@
   </div>
 
   <script>
-    const apiUrl = 'https://ss1105fp1e.execute-api.ap-northeast-2.amazonaws.com/dev/invokeTrigger_ju';
+    // API Gateway URL
+    const apiUrl = 'https://lnshf6x8be.execute-api.ap-northeast-2.amazonaws.com/dev/invokeTrigger_ju';
+    let uploadedBase64Image = null;
 
-    function updateFileName(event) {
-      const fileNameDisplay = document.getElementById('fileNameDisplay');
-      const file = event.target.files[0];
-      fileNameDisplay.textContent = file ? file.name : 'No file selected';
-    }
-
-    function handleImageChange(event) {
-      const image = document.getElementById('uploadedImage');
+    // 이미지 업로드 핸들링
+    const handleImageChange = (event) => {
       const file = event.target.files[0];
       if (file) {
         const reader = new FileReader();
-        reader.onloadend = () => {
-          const base64Image = reader.result.split(',')[1];
-          image.src = reader.result;
-          image.style.display = 'block';
+        reader.onload = () => {
+          const img = document.getElementById('uploadedImage');
+          img.src = reader.result;
+          img.style.display = 'block';
+          uploadedBase64Image = reader.result.split(',')[1];
         };
         reader.readAsDataURL(file);
       }
-    }
+    };
 
-    async function handleSubmit(event) {
+    // 파일 이름 업데이트
+    const updateFileName = (event) => {
+      const fileNameDisplay = document.getElementById('fileNameDisplay');
+      const file = event.target.files[0];
+      fileNameDisplay.textContent = file ? file.name : 'No file selected';
+    };
+
+    // 폼 제출 핸들링
+    const handleSubmit = async (event) => {
       event.preventDefault();
-
       const height = document.getElementById('height').value;
       const weight = document.getElementById('weight').value;
 
-      if (!height || !weight) {
-        alert('All fields are required.');
+      if (!uploadedBase64Image) {
+        alert('이미지를 업로드하세요.');
+        return;
+      }
+
+      // localStorage에서 userId 가져오기
+      const userId = localStorage.getItem('userId');
+      if (!userId) {
+        alert('사용자 ID가 없습니다. 메인 페이지에서 로그인하세요.');
         return;
       }
 
@@ -202,22 +213,27 @@
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
+            userId, // 고유 사용자 ID 포함
             height: parseFloat(height),
             weight: parseFloat(weight),
+            file_data: uploadedBase64Image,
           }),
         });
 
-        if (!response.ok) {
+        if (response.ok) {
+          const data = await response.json();
+          console.log('API Response:', data);
+          alert(`성공: ${JSON.stringify(data)}`);
+        } else {
           const errorData = await response.json();
-          throw new Error(`API error: ${errorData.message || response.statusText}`);
+          console.error('API Error:', errorData);
+          alert(`실패: ${errorData.message}`);
         }
-
-        const data = await response.json();
-        alert(`Data processed successfully: ${JSON.stringify(data)}`);
       } catch (error) {
-        alert(`Error: ${error.message}`);
+        console.error('Error:', error);
+        alert('요청 처리 중 오류가 발생했습니다.');
       }
-    }
+    };
   </script>
 </body>
 </html>
