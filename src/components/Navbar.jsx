@@ -76,15 +76,9 @@ const Item = styled(motion.li)`
 `;
 
 // Cognito Config
-<<<<<<< HEAD
 const COGNITO_DOMAIN = 'https://ap-northeast-2gm0vtjvnj.auth.ap-northeast-2.amazoncognito.com';
 const REDIRECT_URI = 'https://d19kcxe6thj51s.cloudfront.net';
 const CLIENT_ID = '5eerhp5cdcpmr6vin34vfru026';
-=======
-const COGNITO_DOMAIN = 'https://ap-northeast-2ivdyin7gr.auth.ap-northeast-2.amazoncognito.com';
-const REDIRECT_URI = 'https://d3ar16mky2i6te.cloudfront.net';
-const CLIENT_ID = '6tnct5lftekfjnvoq4fa8810pj';
->>>>>>> 20c7184 (v 3.0.1)
 
 const Navbar = () => {
   const [click, setClick] = useState(false);
@@ -104,6 +98,7 @@ const Navbar = () => {
       console.log("localStorage 토큰 확인:", accessToken ? '존재' : '없음');
       if (accessToken) {
         setIsAuthenticated(true);
+        generateAndStoreUserId(); // 로그인 상태일 때 UUID 생성 및 저장
       }
     }
   }, []);
@@ -147,6 +142,7 @@ const Navbar = () => {
         if (tokens.refresh_token) localStorage.setItem('refreshToken', tokens.refresh_token);
         
         setIsAuthenticated(true);
+        generateAndStoreUserId(); // 로그인 성공 후 UUID 생성 및 저장
 
         // URL 정리 (code 파라미터 제거)
         window.history.replaceState({}, document.title, window.location.pathname);
@@ -160,6 +156,17 @@ const Navbar = () => {
       console.error('토큰 교환 중 오류:', error);
       setIsAuthenticated(false);
       alert('토큰 교환 중 오류가 발생했습니다. 다시 시도해주세요.');
+    }
+  };
+
+  const generateAndStoreUserId = () => {
+    let userId = localStorage.getItem('userId');
+    if (!userId) {
+      userId = crypto.randomUUID();
+      localStorage.setItem('userId', userId);
+      console.log("새로운 userId 생성 및 저장:", userId);
+    } else {
+      console.log("기존 userId 사용:", userId);
     }
   };
 
@@ -199,6 +206,7 @@ const Navbar = () => {
     localStorage.removeItem('accessToken');
     localStorage.removeItem('idToken');
     localStorage.removeItem('refreshToken');
+    localStorage.removeItem('userId'); // 로그아웃 시 userId 제거
     
     setIsAuthenticated(false);
 
@@ -270,7 +278,7 @@ const Navbar = () => {
           whileTap={{ scale: 0.9, y: 0 }}
           onClick={handleBonggenieClick}
         >
-          <Link to="#">BONGGENIEV19</Link>
+          <Link to="#">BONGGENIEV20</Link>
         </Item>
       </MenuItems>
     </NavContainer>
