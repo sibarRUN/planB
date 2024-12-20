@@ -134,7 +134,7 @@
       <form onsubmit="handleSubmit(event)">
         <!-- Custom File Upload -->
         <label for="fileInput" class="custom-file-label">Select File</label>
-        <input type="file" id="fileInput" accept="image/*" onchange="updateFileName(event)">
+        <input type="file" id="fileInput" accept="image/*" onchange="handleImageChange(event)"> <!-- 수정: handleImageChange로 변경 -->
         <div id="fileNameDisplay">No file selected</div>
 
         <!-- Height Input -->
@@ -176,7 +176,8 @@ const handleImageChange = (event) => {
       const img = document.getElementById('uploadedImage');
       img.src = reader.result;
       img.style.display = 'block';
-      uploadedBase64Image = reader.result.split(',')[1];
+      uploadedBase64Image = reader.result.split(',')[1]; // Base64 인코딩 데이터 추출
+      console.log('Uploaded Image Base64:', uploadedBase64Image); // 수정: 디버깅 로그 추가
     };
     reader.readAsDataURL(file);
   }
@@ -195,8 +196,8 @@ const handleSubmit = async (event) => {
   const height = document.getElementById('height').value;
   const weight = document.getElementById('weight').value;
 
-  if (!uploadedBase64Image) {
-    alert('이미지를 업로드하세요.');
+  if (!uploadedBase64Image || uploadedBase64Image.trim() === '') { // 수정: 체크 조건 강화
+    alert('이미지가 제대로 업로드되지 않았습니다. 다시 시도해주세요.');
     return;
   }
 
@@ -235,7 +236,6 @@ const handleSubmit = async (event) => {
     alert('요청 처리 중 오류가 발생했습니다.');
   }
 };
-
   </script>
 </body>
 </html>
