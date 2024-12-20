@@ -22,54 +22,35 @@
     }
     .container {
       display: flex;
-      gap: 2rem;
+      flex-direction: column;
       align-items: center;
-    }
-    .explain-container, .form-container {
-      text-align: center;
       background-color: rgba(50, 50, 50, 0.9);
       padding: 2rem;
       border-radius: 10px;
       box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
     }
-    .explain-container img {
-      width: 150px;
-      height: auto;
-    }
-    h1 {
-      font-size: 3rem;
-      margin-bottom: 2rem;
-      color: #ccc;
-    }
-    form {
-      display: flex;
-      flex-direction: column;
-      gap: 1rem;
-    }
     input[type="file"], input[type="number"], .btn {
       width: 100%;
       padding: 0.8rem;
+      margin: 1rem 0;
       font-size: 1.2rem;
       border: 1px solid #555;
       border-radius: 5px;
-      outline: none;
-      margin: 5px 0;
     }
     .btn {
       background-color: #333;
       color: #fff;
-      border: none;
       cursor: pointer;
-      transition: background-color 0.3s ease, transform 0.3s ease;
+      transition: all 0.3s ease;
     }
     .btn:hover {
       background-color: #555;
-      transform: translateY(-3px);
     }
     img#uploadedImage {
       width: 100px;
       height: 100px;
       margin-top: 10px;
+      display: none;
     }
     .input-group {
       display: flex;
@@ -92,77 +73,72 @@
 </head>
 <body>
   <div class="container">
-    <!-- 설명 영역 -->
-    <div class="explain-container">
-      <img src="explain.png" alt="Explanation" />
-      <p>정면이 보이는<br />사진을 첨부하세요.<br />잘못된 사진은<br />추천에 영향을 줄 수 있습니다.</p>
-    </div>
+    <h1>BONGENIE</h1>
+    <form onsubmit="handleSubmit(event)">
+      <!-- 파일 업로드 -->
+      <input type="file" accept="image/*" onchange="handleImageChange(event)" required>
+      <img id="uploadedImage" alt="Uploaded Image">
 
-    <!-- 폼 영역 -->
-    <div class="form-container">
-      <h1>BONGENIE</h1>
-      <form onsubmit="handleSubmit(event)">
-        <!-- 파일 업로드 -->
-        <input type="file" accept="image/*" onchange="handleImageChange(event)" required>
-        <img id="uploadedImage" alt="Uploaded" style="display: none;">
-
-        <!-- 키 입력 -->
-        <div class="input-group">
-          <span>140~200 cm까지 입력.</span>
-          <div>
-            <input type="number" id="height" placeholder="Height (cm)" required min="140" max="200">
-            <span>cm</span>
-          </div>
+      <!-- 키 입력 -->
+      <div class="input-group">
+        <span>140~200 cm까지 입력.</span>
+        <div>
+          <input type="number" id="height" placeholder="Height (cm)" required min="140" max="200">
+          <span>cm</span>
         </div>
+      </div>
 
-        <!-- 몸무게 입력 -->
-        <div class="input-group">
-          <span>40~200 kg까지 입력.</span>
-          <div>
-            <input type="number" id="weight" placeholder="Weight (kg)" required min="40" max="200">
-            <span>kg</span>
-          </div>
+      <!-- 몸무게 입력 -->
+      <div class="input-group">
+        <span>40~200 kg까지 입력.</span>
+        <div>
+          <input type="number" id="weight" placeholder="Weight (kg)" required min="40" max="200">
+          <span>kg</span>
         </div>
+      </div>
 
-        <!-- 제출 버튼 -->
-        <button type="submit" class="btn" id="submitButton">Submit</button>
-      </form>
-    </div>
+      <!-- 제출 버튼 -->
+      <button type="submit" class="btn" id="submitButton">Submit</button>
+    </form>
   </div>
 
   <script>
-    // 올바른 API Gateway 엔드포인트 URL로 수정
+    // API Gateway URL
     const apiUrl = 'https://lnshf6x8be.execute-api.ap-northeast-2.amazonaws.com/dev/invokeTrigger_ju';
+    let uploadedBase64Image = null;
 
-    let uploadedBase64Image = null; 
-
-    function handleImageChange(event) {
-      const image = document.getElementById('uploadedImage');
+    // 이미지 업로드 핸들링
+    const handleImageChange = (event) => {
       const file = event.target.files[0];
       if (file) {
         const reader = new FileReader();
-        reader.onloadend = () => {
-          const base64Image = reader.result.split(',')[1];
-          image.src = reader.result;
-          image.style.display = 'block';
-          uploadedBase64Image = base64Image;
+        reader.onload = () => {
+          const img = document.getElementById('uploadedImage');
+          img.src = reader.result;
+          img.style.display = 'block';
+          uploadedBase64Image = reader.result.split(',')[1];
         };
         reader.readAsDataURL(file);
       }
-    }
+    };
 
-    async function handleSubmit(event) {
+    // 폼 제출 핸들링
+    const handleSubmit = async (event) => {
       event.preventDefault();
-
       const height = document.getElementById('height').value;
       const weight = document.getElementById('weight').value;
 
-      if (!height || !weight || !uploadedBase64Image) {
-        alert('모든 필드를 입력하세요.');
+      if (!uploadedBase64Image) {
+        alert('이미지를 업로드하세요.');
         return;
       }
 
-      console.log('Submitting data:', { height, weight, uploadedBase64Image });
+      // localStorage에서 userId 가져오기
+      const userId = localStorage.getItem('userId');
+      if (!userId) {
+        alert('사용자 ID가 없습니다. 메인 페이지에서 로그인하세요.');
+        return;
+      }
 
       try {
         const response = await fetch(apiUrl, {
@@ -171,26 +147,25 @@
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
+            userId, // 고유 사용자 ID 포함
             height: parseFloat(height),
             weight: parseFloat(weight),
             file_data: uploadedBase64Image,
           }),
         });
 
-        console.log('API response status:', response.status);
-
-        if (!response.ok) {
+        if (response.ok) {
+          const data = await response.json();
+          console.log('API Response:', data);
+          alert(`성공: ${JSON.stringify(data)}`);
+        } else {
           const errorData = await response.json();
-          console.error('API 호출 실패:', errorData);
-          throw new Error(`API 호출 실패: ${errorData.message || response.statusText}`);
+          console.error('API Error:', errorData);
+          alert(`실패: ${errorData.message}`);
         }
-
-        const data = await response.json();
-        console.log('API response data:', data);
-        alert(`Data processed successfully: ${JSON.stringify(data)}`);
       } catch (error) {
-        console.error('오류 발생:', error);
-        alert(`오류: ${error.message}`);
+        console.error('Error:', error);
+        alert('요청 처리 중 오류가 발생했습니다.');
       }
     };
   </script>
