@@ -5,9 +5,20 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Bongjini</title>
   <style>
+<<<<<<< HEAD
     /* 기존 스타일 유지 */
     body {
       font-family: 'Kaushan Script', sans-serif;
+=======
+    @font-face {
+      font-family: 'BagnardSans';
+      src: url('./BagnardSans.otf') format('opentype');
+      font-weight: normal;
+      font-style: normal;
+    }
+    body {
+      font-family: 'BagnardSans', sans-serif;
+>>>>>>> 20c7184 (v 3.0.1)
       background-image: url('suit.webp');
       background-size: cover;
       background-position: center;
@@ -26,8 +37,13 @@
       align-items: center;
       background-color: rgba(50, 50, 50, 0.9);
       padding: 2rem;
+<<<<<<< HEAD
       border-radius: 10px;
       box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+=======
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+      border-radius: 0;
+>>>>>>> 20c7184 (v 3.0.1)
     }
     input[type="file"], input[type="number"], .btn {
       width: 100%;
@@ -35,7 +51,16 @@
       margin: 1rem 0;
       font-size: 1.2rem;
       border: 1px solid #555;
+<<<<<<< HEAD
       border-radius: 5px;
+<<<<<<< HEAD
+=======
+=======
+      border-radius: 0;
+>>>>>>> 20c7184 (v 3.0.1)
+      outline: none;
+      margin: 5px 0;
+>>>>>>> 80ff10e83ae3de6afb3b224c67b2d667e3443e2d
     }
     .btn {
       background-color: #333;
@@ -69,10 +94,39 @@
       flex: 1;
       font-size: 1rem;
     }
+<<<<<<< HEAD
+=======
+    /* 숨겨진 파일 선택 */
+    input[type="file"] {
+      display: none;
+    }
+    /* 사용자 정의 업로드 버튼 */
+    .custom-file-label {
+      display: inline-block;
+      padding: 0.8rem 1.5rem;
+      background-color: #333;
+      color: white;
+      border: 1px solid #555;
+      border-radius: 5px;
+      cursor: pointer;
+      text-align: center;
+      transition: background-color 0.3s ease;
+    }
+    .custom-file-label:hover {
+      background-color: #555;
+    }
+    /* 파일 이름 표시 */
+    #fileNameDisplay {
+      font-size: 1rem;
+      color: white;
+      margin-top: 10px;
+    }
+>>>>>>> 20c7184 (v 3.0.1)
   </style>
 </head>
 <body>
   <div class="container">
+<<<<<<< HEAD
     <h1>BONGENIE</h1>
     <form onsubmit="handleSubmit(event)">
       <!-- 파일 업로드 -->
@@ -85,18 +139,79 @@
         <div>
           <input type="number" id="height" placeholder="Height (cm)" required min="140" max="200">
           <span>cm</span>
+=======
+<<<<<<< HEAD
+    <!-- 설명 영역 -->
+    <div class="explain-container">
+      <img src="explain.png" alt="Explanation" />
+      <p>정면이 보이는<br />사진을 첨부하세요.<br />잘못된 사진은<br />추천에 영향을 줄 수 있습니다.</p>
+    </div>
+
+    <!-- 폼 영역 -->
+    <div class="form-container">
+      <h1>BONGENIE</h1>
+      <form onsubmit="handleSubmit(event)">
+        <!-- 파일 업로드 -->
+        <input type="file" accept="image/*" onchange="handleImageChange(event)" required>
+        <img id="uploadedImage" alt="Uploaded" style="display: none;">
+
+        <!-- 키 입력 -->
+        <div class="input-group">
+          <span>140~200 cm까지 입력.</span>
+=======
+    <!-- Explanation Area -->
+    <div class="explain-container">
+      <img src="explain.png" alt="Explanation" />
+      <p>Please upload<br />a front-facing photo.<br />Incorrect photos<br />may affect recommendations.</p>
+    </div>
+
+    <!-- Form Area -->
+    <div class="form-container">
+      <h1>BONGENIE</h1>
+      <form onsubmit="handleSubmit(event)">
+        <!-- Custom File Upload -->
+        <label for="fileInput" class="custom-file-label">Select File</label>
+        <input type="file" id="fileInput" accept="image/*" onchange="updateFileName(event)">
+        <div id="fileNameDisplay">No file selected</div>
+
+        <!-- Height Input -->
+        <div class="input-group">
+          <span>Only 140~200 cm is allowed.</span>
+>>>>>>> 20c7184 (v 3.0.1)
+          <div>
+            <input type="number" id="height" placeholder="Height (cm)" required min="140" max="200">
+            <span>cm</span>
+          </div>
+>>>>>>> 80ff10e83ae3de6afb3b224c67b2d667e3443e2d
         </div>
       </div>
 
+<<<<<<< HEAD
       <!-- 몸무게 입력 -->
       <div class="input-group">
         <span>40~200 kg까지 입력.</span>
         <div>
           <input type="number" id="weight" placeholder="Weight (kg)" required min="40" max="200">
           <span>kg</span>
+=======
+<<<<<<< HEAD
+        <!-- 몸무게 입력 -->
+        <div class="input-group">
+          <span>40~200 kg까지 입력.</span>
+=======
+        <!-- Weight Input -->
+        <div class="input-group">
+          <span>Only 40~200 kg is allowed.</span>
+>>>>>>> 20c7184 (v 3.0.1)
+          <div>
+            <input type="number" id="weight" placeholder="Weight (kg)" required min="40" max="200">
+            <span>kg</span>
+          </div>
+>>>>>>> 80ff10e83ae3de6afb3b224c67b2d667e3443e2d
         </div>
       </div>
 
+<<<<<<< HEAD
       <!-- 제출 버튼 -->
       <button type="submit" class="btn" id="submitButton">Submit</button>
     </form>
@@ -104,9 +219,25 @@
 
   <script>
     // API Gateway URL
+=======
+<<<<<<< HEAD
+        <!-- 제출 버튼 -->
+=======
+        <!-- Submit Button -->
+>>>>>>> 20c7184 (v 3.0.1)
+        <button type="submit" class="btn" id="submitButton">Submit</button>
+      </form>
+    </div>
+  </div>
+
+  <script>
+<<<<<<< HEAD
+    // 올바른 API Gateway 엔드포인트 URL로 수정
+>>>>>>> 80ff10e83ae3de6afb3b224c67b2d667e3443e2d
     const apiUrl = 'https://lnshf6x8be.execute-api.ap-northeast-2.amazonaws.com/dev/invokeTrigger_ju';
     let uploadedBase64Image = null;
 
+<<<<<<< HEAD
     // 이미지 업로드 핸들링
     const handleImageChange = (event) => {
       const file = event.target.files[0];
@@ -117,6 +248,32 @@
           img.src = reader.result;
           img.style.display = 'block';
           uploadedBase64Image = reader.result.split(',')[1];
+=======
+    let uploadedBase64Image = null; 
+=======
+    const apiUrl = 'https://ss1105fp1e.execute-api.ap-northeast-2.amazonaws.com/dev/invokeTrigger_ju';
+
+    function updateFileName(event) {
+      const fileNameDisplay = document.getElementById('fileNameDisplay');
+      const file = event.target.files[0];
+      fileNameDisplay.textContent = file ? file.name : 'No file selected';
+    }
+>>>>>>> 20c7184 (v 3.0.1)
+
+    function handleImageChange(event) {
+      const image = document.getElementById('uploadedImage');
+      const file = event.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onloadend = () => {
+          const base64Image = reader.result.split(',')[1];
+          image.src = reader.result;
+          image.style.display = 'block';
+<<<<<<< HEAD
+          uploadedBase64Image = base64Image;
+=======
+>>>>>>> 20c7184 (v 3.0.1)
+>>>>>>> 80ff10e83ae3de6afb3b224c67b2d667e3443e2d
         };
         reader.readAsDataURL(file);
       }
@@ -128,8 +285,14 @@
       const height = document.getElementById('height').value;
       const weight = document.getElementById('weight').value;
 
+<<<<<<< HEAD
       if (!uploadedBase64Image) {
         alert('이미지를 업로드하세요.');
+=======
+<<<<<<< HEAD
+      if (!height || !weight || !uploadedBase64Image) {
+        alert('모든 필드를 입력하세요.');
+>>>>>>> 80ff10e83ae3de6afb3b224c67b2d667e3443e2d
         return;
       }
 
@@ -140,6 +303,13 @@
         return;
       }
 
+=======
+      if (!height || !weight) {
+        alert('All fields are required.');
+        return;
+      }
+
+>>>>>>> 20c7184 (v 3.0.1)
       try {
         const response = await fetch(apiUrl, {
           method: 'POST',
@@ -150,6 +320,7 @@
             userId, // 고유 사용자 ID 포함
             height: parseFloat(height),
             weight: parseFloat(weight),
+<<<<<<< HEAD
             file_data: uploadedBase64Image,
           }),
         });
@@ -168,6 +339,22 @@
         alert('요청 처리 중 오류가 발생했습니다.');
       }
     };
+=======
+          }),
+        });
+
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(`API error: ${errorData.message || response.statusText}`);
+        }
+
+        const data = await response.json();
+        alert(`Data processed successfully: ${JSON.stringify(data)}`);
+      } catch (error) {
+        alert(`Error: ${error.message}`);
+      }
+    }
+>>>>>>> 20c7184 (v 3.0.1)
   </script>
 </body>
 </html>
