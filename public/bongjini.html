@@ -5,9 +5,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Bongjini</title>
   <style>
-    /* 기존 스타일 유지 */
+    @font-face {
+      font-family: 'BagnardSans';
+      src: url('./BagnardSans.otf') format('opentype');
+      font-weight: normal;
+      font-style: normal;
+    }
     body {
-      font-family: 'Kaushan Script', sans-serif;
+      font-family: 'BagnardSans', sans-serif;
       background-image: url('suit.webp');
       background-size: cover;
       background-position: center;
@@ -22,35 +27,54 @@
     }
     .container {
       display: flex;
-      flex-direction: column;
+      gap: 2rem;
       align-items: center;
+    }
+    .explain-container, .form-container {
+      text-align: center;
       background-color: rgba(50, 50, 50, 0.9);
       padding: 2rem;
-      border-radius: 10px;
       box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+      border-radius: 0;
+    }
+    .explain-container img {
+      width: 150px;
+      height: auto;
+    }
+    h1 {
+      font-size: 3rem;
+      margin-bottom: 2rem;
+      color: #ccc;
+    }
+    form {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
     }
     input[type="file"], input[type="number"], .btn {
       width: 100%;
       padding: 0.8rem;
-      margin: 1rem 0;
       font-size: 1.2rem;
       border: 1px solid #555;
-      border-radius: 5px;
+      border-radius: 0;
+      outline: none;
+      margin: 5px 0;
     }
     .btn {
       background-color: #333;
       color: #fff;
+      border: none;
       cursor: pointer;
-      transition: all 0.3s ease;
+      transition: background-color 0.3s ease, transform 0.3s ease;
     }
     .btn:hover {
       background-color: #555;
+      transform: translateY(-3px);
     }
     img#uploadedImage {
       width: 100px;
       height: 100px;
       margin-top: 10px;
-      display: none;
     }
     .input-group {
       display: flex;
@@ -69,37 +93,72 @@
       flex: 1;
       font-size: 1rem;
     }
+    /* 숨겨진 파일 선택 */
+    input[type="file"] {
+      display: none;
+    }
+    /* 사용자 정의 업로드 버튼 */
+    .custom-file-label {
+      display: inline-block;
+      padding: 0.8rem 1.5rem;
+      background-color: #333;
+      color: white;
+      border: 1px solid #555;
+      border-radius: 5px;
+      cursor: pointer;
+      text-align: center;
+      transition: background-color 0.3s ease;
+    }
+    .custom-file-label:hover {
+      background-color: #555;
+    }
+    /* 파일 이름 표시 */
+    #fileNameDisplay {
+      font-size: 1rem;
+      color: white;
+      margin-top: 10px;
+    }
   </style>
 </head>
 <body>
   <div class="container">
-    <h1>BONGENIE</h1>
-    <form onsubmit="handleSubmit(event)">
-      <!-- 파일 업로드 -->
-      <input type="file" accept="image/*" onchange="handleImageChange(event)" required>
-      <img id="uploadedImage" alt="Uploaded Image">
+    <!-- Explanation Area -->
+    <div class="explain-container">
+      <img src="explain.png" alt="Explanation" />
+      <p>Please upload<br />a front-facing photo.<br />Incorrect photos<br />may affect recommendations.</p>
+    </div>
 
-      <!-- 키 입력 -->
-      <div class="input-group">
-        <span>140~200 cm까지 입력.</span>
-        <div>
-          <input type="number" id="height" placeholder="Height (cm)" required min="140" max="200">
-          <span>cm</span>
+    <!-- Form Area -->
+    <div class="form-container">
+      <h1>BONGENIE</h1>
+      <form onsubmit="handleSubmit(event)">
+        <!-- Custom File Upload -->
+        <label for="fileInput" class="custom-file-label">Select File</label>
+        <input type="file" id="fileInput" accept="image/*" onchange="updateFileName(event)">
+        <div id="fileNameDisplay">No file selected</div>
+
+        <!-- Height Input -->
+        <div class="input-group">
+          <span>Only 140~200 cm is allowed.</span>
+          <div>
+            <input type="number" id="height" placeholder="Height (cm)" required min="140" max="200">
+            <span>cm</span>
+          </div>
         </div>
-      </div>
 
-      <!-- 몸무게 입력 -->
-      <div class="input-group">
-        <span>40~200 kg까지 입력.</span>
-        <div>
-          <input type="number" id="weight" placeholder="Weight (kg)" required min="40" max="200">
-          <span>kg</span>
+        <!-- Weight Input -->
+        <div class="input-group">
+          <span>Only 40~200 kg is allowed.</span>
+          <div>
+            <input type="number" id="weight" placeholder="Weight (kg)" required min="40" max="200">
+            <span>kg</span>
+          </div>
         </div>
-      </div>
 
-      <!-- 제출 버튼 -->
-      <button type="submit" class="btn" id="submitButton">Submit</button>
-    </form>
+        <!-- Submit Button -->
+        <button type="submit" class="btn" id="submitButton">Submit</button>
+      </form>
+    </div>
   </div>
 
   <script>
@@ -122,7 +181,6 @@
       }
     };
 
-<<<<<<< HEAD
     // 파일 이름 업데이트
     const updateFileName = (event) => {
       const fileNameDisplay = document.getElementById('fileNameDisplay');
@@ -130,8 +188,6 @@
       fileNameDisplay.textContent = file ? file.name : 'No file selected';
     };
 
-=======
->>>>>>> 4701e8862d5f28393b6b8e1a02531a25f7399b39
     // 폼 제출 핸들링
     const handleSubmit = async (event) => {
       event.preventDefault();
