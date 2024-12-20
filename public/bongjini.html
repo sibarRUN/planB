@@ -95,22 +95,20 @@
     <!-- 설명 영역 -->
     <div class="explain-container">
       <img src="explain.png" alt="Explanation" />
-      <p>정면이 보이는<br />자지를 첨부하세요.<br />잘못된 사진은<br />추천에 영향을 주기는 씨발년아!!!</p>
+      <p>정면이 보이는<br />사진을 첨부하세요.<br />잘못된 사진은<br />추천에 영향을 줄 수 있습니다.</p>
     </div>
 
     <!-- 폼 영역 -->
     <div class="form-container">
       <h1>BONGENIE</h1>
-      <!-- 로그인 영역 제거 -->
-
       <form onsubmit="handleSubmit(event)">
         <!-- 파일 업로드 -->
-        <input type="file" accept="image/*" onchange="handleImageChange(event)">
+        <input type="file" accept="image/*" onchange="handleImageChange(event)" required>
         <img id="uploadedImage" alt="Uploaded" style="display: none;">
 
         <!-- 키 입력 -->
         <div class="input-group">
-          <span>140~200까지 입력 가능?</span>
+          <span>140~200 cm까지 입력 가능합니다.</span>
           <div>
             <input type="number" id="height" placeholder="Height (cm)" required min="140" max="200">
             <span>cm</span>
@@ -119,7 +117,7 @@
 
         <!-- 몸무게 입력 -->
         <div class="input-group">
-          <span>40~200까지 입력 가능!!!!</span>
+          <span>40~200 kg까지 입력 가능합니다.</span>
           <div>
             <input type="number" id="weight" placeholder="Weight (kg)" required min="40" max="200">
             <span>kg</span>
@@ -137,23 +135,6 @@
     const apiUrl = 'https://ss1105fp1e.execute-api.ap-northeast-2.amazonaws.com/dev/invokeTrigger_ju';
 
     let uploadedBase64Image = null; 
-    let userAccessToken = null; // 로그인 후 얻은 Access Token 저장용
-    let idToken = null; // 로그인 후 얻은 ID Token 저장용
-    
-    // 페이지 로드 시 토큰 확인
-    window.addEventListener('load', () => {
-      const accessToken = localStorage.getItem('accessToken');
-      const storedIdToken = localStorage.getItem('idToken');
-      if (!accessToken || !storedIdToken) {
-        // 로그인 안된 경우
-        alert('로그인 후 이용 가능합니다. 메인 페이지로 돌아갑니다.');
-        window.location.href = 'https://d3ar16mky2i6te.cloudfront.net'; // 메인 페이지로 이동
-      } else {
-        // 로그인 된 경우
-        userAccessToken = accessToken;
-        idToken = storedIdToken;
-      }
-    });
 
     function handleImageChange(event) {
       const image = document.getElementById('uploadedImage');
@@ -181,11 +162,6 @@
         return;
       }
 
-      if(!idToken) {
-        alert('로그인 후 이용가능합니다.');
-        return;
-      }
-
       console.log('Submitting data:', { height, weight, uploadedBase64Image });
 
       try {
@@ -193,7 +169,6 @@
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            'Authorization': `Bearer ${userAccessToken}` // ID Token 사용
           },
           body: JSON.stringify({
             height: parseFloat(height),
