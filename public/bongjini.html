@@ -95,7 +95,7 @@
     <!-- 설명 영역 -->
     <div class="explain-container">
       <img src="explain.png" alt="Explanation" />
-      <p>정면이 보이는<br />사진을 첨부하세요.<br />잘못된 사진은<br />추천에 영향을 주기는 씨발년아!!!</p>
+      <p>정면이 보이는<br />자지를 첨부하세요.<br />잘못된 사진은<br />추천에 영향을 주기는 씨발년아!!!</p>
     </div>
 
     <!-- 폼 영역 -->
@@ -138,18 +138,20 @@
 
     let uploadedBase64Image = null; 
     let userAccessToken = null; // 로그인 후 얻은 Access Token 저장용
-    let idToken = null; // 로그인 후 얻은 idToken 저장용
+    let idToken = null; // 로그인 후 얻은 ID Token 저장용
     
     // 페이지 로드 시 토큰 확인
     window.addEventListener('load', () => {
       const accessToken = localStorage.getItem('accessToken');
-      if (!accessToken) {
+      const storedIdToken = localStorage.getItem('idToken');
+      if (!accessToken || !storedIdToken) {
         // 로그인 안된 경우
         alert('로그인 후 이용 가능합니다. 메인 페이지로 돌아갑니다.');
         window.location.href = 'https://d3ar16mky2i6te.cloudfront.net'; // 메인 페이지로 이동
       } else {
         // 로그인 된 경우
         userAccessToken = accessToken;
+        idToken = storedIdToken;
       }
     });
 
@@ -179,7 +181,7 @@
         return;
       }
 
-      if(!userAccessToken) {
+      if(!idToken) {
         alert('로그인 후 이용가능합니다.');
         return;
       }
@@ -191,7 +193,7 @@
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            'Authorization': `Bearer ${idToken}`
+            'Authorization': `Bearer ${userAccessToken}` // ID Token 사용
           },
           body: JSON.stringify({
             height: parseFloat(height),

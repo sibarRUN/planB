@@ -138,18 +138,17 @@
 
     let uploadedBase64Image = null; 
     let userAccessToken = null; // 로그인 후 얻은 Access Token 저장용
-    let idToken = null; // 로그인 후 얻은 idToken 저장용
     
     // 페이지 로드 시 토큰 확인
     window.addEventListener('load', () => {
-      const accessToken = localStorage.getItem('accessToken');
-      if (!accessToken) {
+      const storedAccessToken = localStorage.getItem('accessToken');
+      if (!storedAccessToken) {
         // 로그인 안된 경우
         alert('로그인 후 이용 가능합니다. 메인 페이지로 돌아갑니다.');
         window.location.href = 'https://d3ar16mky2i6te.cloudfront.net'; // 메인 페이지로 이동
       } else {
         // 로그인 된 경우
-        userAccessToken = accessToken;
+        userAccessToken = storedAccessToken;
       }
     });
 
@@ -191,7 +190,7 @@
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            'Authorization': `Bearer ${idToken}`
+            'Authorization': `Bearer ${userAccessToken}` // Access Token 사용
           },
           body: JSON.stringify({
             height: parseFloat(height),
