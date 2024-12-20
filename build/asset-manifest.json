@@ -1,21 +1,9 @@
 {
   "files": {
     "main.css": "/static/css/main.56a55649.css",
-<<<<<<< HEAD
     "main.js": "/static/js/main.440a6373.js",
     "static/js/258.d50c2093.chunk.js": "/static/js/258.d50c2093.chunk.js",
     "static/js/566.36cb3374.chunk.js": "/static/js/566.36cb3374.chunk.js",
-=======
-<<<<<<< HEAD
-    "main.js": "/static/js/main.3ef0f107.js",
-    "static/js/258.d50c2093.chunk.js": "/static/js/258.d50c2093.chunk.js",
-    "static/js/566.8ac21768.chunk.js": "/static/js/566.8ac21768.chunk.js",
-=======
-    "main.js": "/static/js/main.0e6b8f17.js",
-    "static/js/258.d50c2093.chunk.js": "/static/js/258.d50c2093.chunk.js",
-    "static/js/566.4ec7fab9.chunk.js": "/static/js/566.4ec7fab9.chunk.js",
->>>>>>> 20c7184 (v 3.0.1)
->>>>>>> 80ff10e83ae3de6afb3b224c67b2d667e3443e2d
     "static/js/633.4f960928.chunk.js": "/static/js/633.4f960928.chunk.js",
     "static/media/Walking Girl.mp4": "/static/media/Walking Girl.3e396b6d837d0a1e8fb6.mp4",
     "static/media/3.webp": "/static/media/3.a09d4f9247ff1db2326a.webp",
@@ -39,14 +27,6 @@
   },
   "entrypoints": [
     "static/css/main.56a55649.css",
-<<<<<<< HEAD
     "static/js/main.440a6373.js"
-=======
-<<<<<<< HEAD
-    "static/js/main.3ef0f107.js"
-=======
-    "static/js/main.0e6b8f17.js"
->>>>>>> 20c7184 (v 3.0.1)
->>>>>>> 80ff10e83ae3de6afb3b224c67b2d667e3443e2d
   ]
 }

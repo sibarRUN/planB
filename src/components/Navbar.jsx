@@ -278,7 +278,7 @@ const Navbar = () => {
           whileTap={{ scale: 0.9, y: 0 }}
           onClick={handleBonggenieClick}
         >
-          <Link to="#">BONGGENIEV19</Link>
+          <Link to="#">BONGGENIEV20</Link>
         </Item>
       </MenuItems>
     </NavContainer>
