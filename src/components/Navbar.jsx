@@ -76,9 +76,15 @@ const Item = styled(motion.li)`
 `;
 
 // Cognito Config
+<<<<<<< HEAD
 const COGNITO_DOMAIN = 'https://ap-northeast-2gm0vtjvnj.auth.ap-northeast-2.amazoncognito.com';
 const REDIRECT_URI = 'https://d19kcxe6thj51s.cloudfront.net';
 const CLIENT_ID = '5eerhp5cdcpmr6vin34vfru026';
+=======
+const COGNITO_DOMAIN = 'https://ap-northeast-2ivdyin7gr.auth.ap-northeast-2.amazoncognito.com';
+const REDIRECT_URI = 'https://d3ar16mky2i6te.cloudfront.net';
+const CLIENT_ID = '6tnct5lftekfjnvoq4fa8810pj';
+>>>>>>> 20c7184 (v 3.0.1)
 
 const Navbar = () => {
   const [click, setClick] = useState(false);
