@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Bongjini</title>
+  <style>
+    @font-face {
+      font-family: 'BagnardSans';
+      src: url('./BagnardSans.otf') format('opentype');
+      font-weight: normal;
+      font-style: normal;
+    }
+    body {
+      font-family: 'BagnardSans', sans-serif;
+      background-image: url('suit.webp');
+      background-size: cover;
+      background-position: center;
+      color: #fff;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+      overflow: hidden;
+      position: relative;
+    }
+    .container {
+      display: flex;
+      gap: 2rem;
+      align-items: center;
+    }
+    .explain-container, .form-container {
+      text-align: center;
+      background-color: rgba(50, 50, 50, 0.9);
+      padding: 2rem;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+      border-radius: 0;
+    }
+    .explain-container img {
+      width: 150px;
+      height: auto;
+    }
+    h1 {
+      font-size: 3rem;
+      margin-bottom: 2rem;
+      color: #ccc;
+    }
+    form {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+    input[type="file"], input[type="number"], .btn {
+      width: 100%;
+      padding: 0.8rem;
+      font-size: 1.2rem;
+      border: 1px solid #555;
+      border-radius: 0;
+      outline: none;
+      margin: 5px 0;
+    }
+    .btn {
+      background-color: #333;
+      color: #fff;
+      border: none;
+      cursor: pointer;
+      transition: background-color 0.3s ease, transform 0.3s ease;
+    }
+    .btn:hover {
+      background-color: #555;
+      transform: translateY(-3px);
+    }
+    img#uploadedImage {
+      width: 100px;
+      height: 100px;
+      margin-top: 10px;
+      display: none;
+    }
+    .input-group {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 5px;
+      width: 100%;
+    }
+    .input-group div {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      width: 100%;
+    }
+    .input-group input {
+      flex: 1;
+      font-size: 1rem;
+    }
+    /* 숨겨진 파일 선택 */
+    input[type="file"] {
+      display: none;
+    }
+    /* 사용자 정의 업로드 버튼 */
+    .custom-file-label {
+      display: inline-block;
+      padding: 0.8rem 1.5rem;
+      background-color: #333;
+      color: white;
+      border: 1px solid #555;
+      border-radius: 5px;
+      cursor: pointer;
+      text-align: center;
+      transition: background-color 0.3s ease;
+    }
+    .custom-file-label:hover {
+      background-color: #555;
+    }
+    /* 파일 이름 표시 */
+    #fileNameDisplay {
+      font-size: 1rem;
+      color: white;
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Explanation Area -->
+    <div class="explain-container">
+      <img src="explain.png" alt="Explanation" />
+      <p>Please upload<br />a front-facing photo.<br />Incorrect photos<br />may affect recommendations.</p>
+    </div>
+
+    <!-- Form Area -->
+    <div class="form-container">
+      <h1>BONGENIE</h1>
+      <form onsubmit="handleSubmit(event)">
+        <!-- Custom File Upload -->
+        <label for="fileInput" class="custom-file-label">Select File</label>
+        <input type="file" id="fileInput" accept="image/*" onchange="handleImageChange(event)">
+        <div id="fileNameDisplay">No file selected</div>
+        <img id="uploadedImage" alt="Uploaded Image">
+
+        <!-- Height Input -->
+        <div class="input-group">
+          <span>Only 140~200 cm is allowed.</span>
+          <div>
+            <input type="number" id="height" placeholder="Height (cm)" required min="140" max="200">
+            <span>cm</span>
+          </div>
+        </div>
+
+        <!-- Weight Input -->
+        <div class="input-group">
+          <span>Only 40~200 kg is allowed.</span>
+          <div>
+            <input type="number" id="weight" placeholder="Weight (kg)" required min="40" max="200">
+            <span>kg</span>
+          </div>
+        </div>
+
+        <!-- Submit Button -->
+        <button type="submit" class="btn" id="submitButton">Submit</button>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    const apiUrl = 'https://lnshf6x8be.execute-api.ap-northeast-2.amazonaws.com/dev/invokeTrigger_ju';
+    let uploadedBase64Image = null;
+
+    function updateFileName(event) {
+      const fileNameDisplay = document.getElementById('fileNameDisplay');
+      const file = event.target.files[0];
+      if (file) {
+        fileNameDisplay.textContent = file.name; // 파일 이름 업데이트
+      } else {
+        fileNameDisplay.textContent = 'No file selected';
+      }
+    }
+
+    function handleImageChange(event) {
+      const file = event.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = () => {
+          const img = document.getElementById('uploadedImage');
+          img.src = reader.result;
+          img.style.display = 'block';
+          uploadedBase64Image = reader.result.split(',')[1];
+          updateFileName(event); // 파일 이름도 동기화
+        };
+        reader.readAsDataURL(file);
+      } else {
+        const fileNameDisplay = document.getElementById('fileNameDisplay');
+        fileNameDisplay.textContent = 'No file selected';
+      }
+    }
+
+    async function handleSubmit(event) {
+      event.preventDefault();
+      const height = document.getElementById('height').value;
+      const weight = document.getElementById('weight').value;
+
+      if (!uploadedBase64Image) {
+        alert('이미지를 업로드하세요.');
+        return;
+      }
+
+      const userId = localStorage.getItem('userId');
+      if (!userId) {
+        alert('사용자 ID가 없습니다. 메인 페이지에서 로그인하세요.');
+        return;
+      }
+
+      try {
+        const response = await fetch(apiUrl, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            userId,
+            height: parseFloat(height),
+            weight: parseFloat(weight),
+            file_data: uploadedBase64Image,
+          }),
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          console.log('API Response:', data);
+          alert(`성공: ${JSON.stringify(data)}`);
+          window.location.href = 'loading.html';
+        } else {
+          const errorData = await response.json();
+          console.error('API Error:', errorData);
+          alert(`실패: ${errorData.message}`);
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        alert('요청 처리 중 오류가 발생했습니다.');
+      }
+    }
+  </script>
+</body>
+</html>
