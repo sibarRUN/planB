@@ -158,7 +158,10 @@
         </div>
 
         <!-- Submit Button -->
-        <button type="submit" class="btn" id="submitButton">Submit</button>
+        <div style="display: flex; gap: 1rem;">
+          <button type="submit" class="btn" id="submitButton">Submit</button>
+          <button type="button" class="btn" onclick="goBack()">Back</button>
+        </div>
       </form>
     </div>
   </div>
@@ -239,6 +242,10 @@
         console.error('Error:', error);
         alert('요청 처리 중 오류가 발생했습니다.');
       }
+    }
+
+    function goBack() {
+      window.location.href = 'https://d19kcxe6thj51s.cloudfront.net';
     }
   </script>
 </body>
