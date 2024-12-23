@@ -94,11 +94,9 @@
       flex: 1;
       font-size: 1rem;
     }
-    /* 숨겨진 파일 선택 */
     input[type="file"] {
       display: none;
     }
-    /* 사용자 정의 업로드 버튼 */
     .custom-file-label {
       display: inline-block;
       padding: 0.8rem 1.5rem;
@@ -113,7 +111,6 @@
     .custom-file-label:hover {
       background-color: #555;
     }
-    /* 파일 이름 표시 */
     #fileNameDisplay {
       font-size: 1rem;
       color: white;
@@ -174,7 +171,7 @@
       const fileNameDisplay = document.getElementById('fileNameDisplay');
       const file = event.target.files[0];
       if (file) {
-        fileNameDisplay.textContent = file.name; // 파일 이름 업데이트
+        fileNameDisplay.textContent = file.name;
       } else {
         fileNameDisplay.textContent = 'No file selected';
       }
@@ -189,7 +186,7 @@
           img.src = reader.result;
           img.style.display = 'block';
           uploadedBase64Image = reader.result.split(',')[1];
-          updateFileName(event); // 파일 이름도 동기화
+          updateFileName(event);
         };
         reader.readAsDataURL(file);
       } else {
@@ -230,16 +227,13 @@
 
         if (response.ok) {
           const data = await response.json();
-          console.log('API Response:', data);
           alert(`성공: ${JSON.stringify(data)}`);
           window.location.href = 'loading.html';
         } else {
           const errorData = await response.json();
-          console.error('API Error:', errorData);
           alert(`실패: ${errorData.message}`);
         }
       } catch (error) {
-        console.error('Error:', error);
         alert('요청 처리 중 오류가 발생했습니다.');
       }
     }
