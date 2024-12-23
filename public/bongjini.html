@@ -241,11 +241,11 @@
       window.location.href = 'https://d19kcxe6thj51s.cloudfront.net';
     }
 
-    // Replace displayed URL in alerts
+    // Modify all alerts to replace "d19kcxe6thj51s.cloudfront.net" with "Bong Studio"
     const originalAlert = window.alert;
     window.alert = (message) => {
-      if (message.includes('d19kcxe6thj51s.cloudfront.net')) {
-        message = message.replace('d19kcxe6thj51s.cloudfront.net', 'Bong Studio');
+      if (typeof message === 'string' && message.includes('d19kcxe6thj51s.cloudfront.net')) {
+        message = message.replace(/d19kcxe6thj51s\.cloudfront\.net/g, 'Bong Studio');
       }
       originalAlert(message);
     };
