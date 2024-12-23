@@ -226,8 +226,7 @@
         });
 
         if (response.ok) {
-          const data = await response.json();
-          alert(`성공: ${JSON.stringify(data)}`);
+          alert('Success! Please wait a second.');
           window.location.href = 'loading.html';
         } else {
           const errorData = await response.json();
