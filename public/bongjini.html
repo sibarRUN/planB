@@ -94,11 +94,9 @@
       flex: 1;
       font-size: 1rem;
     }
-    /* 숨겨진 파일 선택 */
     input[type="file"] {
       display: none;
     }
-    /* 사용자 정의 업로드 버튼 */
     .custom-file-label {
       display: inline-block;
       padding: 0.8rem 1.5rem;
@@ -113,7 +111,6 @@
     .custom-file-label:hover {
       background-color: #555;
     }
-    /* 파일 이름 표시 */
     #fileNameDisplay {
       font-size: 1rem;
       color: white;
@@ -131,7 +128,7 @@
 
     <!-- Form Area -->
     <div class="form-container">
-      <h1>BONGENIE</h1>
+      <h1>BongGenie</h1>
       <form onsubmit="handleSubmit(event)">
         <!-- Custom File Upload -->
         <label for="fileInput" class="custom-file-label">Select File</label>
@@ -158,7 +155,10 @@
         </div>
 
         <!-- Submit Button -->
-        <button type="submit" class="btn" id="submitButton">Submit</button>
+        <div style="display: flex; gap: 1rem;">
+          <button type="submit" class="btn" id="submitButton">Submit</button>
+          <button type="button" class="btn" onclick="goBack()">Back</button>
+        </div>
       </form>
     </div>
   </div>
@@ -171,7 +171,7 @@
       const fileNameDisplay = document.getElementById('fileNameDisplay');
       const file = event.target.files[0];
       if (file) {
-        fileNameDisplay.textContent = file.name; // 파일 이름 업데이트
+        fileNameDisplay.textContent = file.name;
       } else {
         fileNameDisplay.textContent = 'No file selected';
       }
@@ -186,7 +186,7 @@
           img.src = reader.result;
           img.style.display = 'block';
           uploadedBase64Image = reader.result.split(',')[1];
-          updateFileName(event); // 파일 이름도 동기화
+          updateFileName(event);
         };
         reader.readAsDataURL(file);
       } else {
@@ -226,20 +226,29 @@
         });
 
         if (response.ok) {
-          const data = await response.json();
-          console.log('API Response:', data);
-          alert(`성공: ${JSON.stringify(data)}`);
+          alert('Success! Please wait a second.');
           window.location.href = 'loading.html';
         } else {
           const errorData = await response.json();
-          console.error('API Error:', errorData);
           alert(`실패: ${errorData.message}`);
         }
       } catch (error) {
-        console.error('Error:', error);
         alert('요청 처리 중 오류가 발생했습니다.');
       }
     }
+
+    function goBack() {
+      window.location.href = 'https://d19kcxe6thj51s.cloudfront.net';
+    }
+
+    // Modify all alerts to replace "d19kcxe6thj51s.cloudfront.net" with "Bong Studio"
+    const originalAlert = window.alert;
+    window.alert = (message) => {
+      if (typeof message === 'string' && message.includes('d19kcxe6thj51s.cloudfront.net')) {
+        message = message.replace(/d19kcxe6thj51s\.cloudfront\.net/g, 'Bong Studio');
+      }
+      originalAlert(message);
+    };
   </script>
 </body>
 </html>
