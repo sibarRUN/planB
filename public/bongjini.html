@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Bongjini</title>
+  <style>
+    @font-face {
+      font-family: 'BagnardSans';
+      src: url('./BagnardSans.otf') format('opentype');
+      font-weight: normal;
+      font-style: normal;
+    }
+
+    /* 전체 화면 및 배경 설정 */
+    body {
+      font-family: 'BagnardSans', sans-serif;
+      margin: 0;
+      padding: 0;
+      height: 100vh;
+      width: 100vw;
+      position: relative;
+      background-color: black;
+      /* 원하신다면 아래 배경이미지 사용: */
+      background-image: url('suit.webp');
+      background-size: contain;
+      background-position: center;
+      background-repeat: no-repeat;
+      
+      overflow: hidden; /* 세로스크롤 방지 */
+    }
+
+    /* 좌측, 중앙, 우측을 아우르는 큰 컨테이너 */
+    .outer-container {
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+      align-items: center;
+      height: 100%;
+      width: 100%;
+      position: relative;
+    }
+
+    /* 좌우 이미지 컨테이너 */
+    .side-image {
+      flex: 1; 
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      max-width: 30%;
+    }
+    /* 좌우 이미지 크기를 70%로 축소 */
+    .side-image img {
+      max-width: 70%;
+      height: auto;
+      object-fit: cover;
+    }
+
+    /* 중앙(기존 .container) 안에 있던 두 영역 배치는 그대로 유지 */
+    .center-container {
+      flex: 1; 
+      display: flex;
+      flex-direction: row;
+      gap: 2rem;
+      align-items: center;
+      justify-content: center;
+      height: 100%;
+      position: relative;
+    }
+
+    /* 기존 코드에서 사용하던 .explain-container와 .form-container 스타일 그대로 */
+    .explain-container, .form-container {
+      text-align: center;
+      background-color: rgba(0, 0, 0, 0.7); /* 어두운 효과 */
+      padding: 2rem;
+      border-radius: 10px;
+      color: white;
+    }
+    .explain-container img {
+      width: 150px;
+      height: auto;
+    }
+
+    /* QR코드 위치: 맨 밑 우측 + 이미지와 겹치지 않도록 z-index 추가 */
+    .qr-code-container {
+      position: absolute;
+      right: 20px;
+      bottom: 20px;
+      width: 150px;
+      height: 150px;
+      background: url('qr_code.png') no-repeat center center;
+      background-size: contain;
+      z-index: 9999; /* 항상 맨 위 */
+    }
+
+    /* 폰트 크기 등은 기존 유지 */
+    h1 {
+      font-size: 3rem;
+      margin-bottom: 2rem;
+    }
+    form {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+    input[type="file"], input[type="number"], .btn {
+      width: 100%;
+      padding: 0.8rem;
+      font-size: 1.2rem;
+      border: 1px solid #555;
+      outline: none;
+      margin: 5px 0;
+      background-color: #333;
+      color: #fff;
+      border-radius: 5px;
+    }
+    .btn {
+      cursor: pointer;
+      transition: background-color 0.3s ease, transform 0.3s ease;
+    }
+    .btn:hover {
+      background-color: #555;
+      transform: translateY(-3px);
+    }
+    img#uploadedImage {
+      width: 100px;
+      height: 100px;
+      margin-top: 10px;
+      display: none;
+    }
+    .input-group {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 5px;
+      width: 100%;
+    }
+    .input-group div {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      width: 100%;
+    }
+    .input-group input {
+      flex: 1;
+      font-size: 1rem;
+    }
+    input[type="file"] {
+      display: none;
+    }
+    .custom-file-label {
+      display: inline-block;
+      padding: 0.8rem 1.5rem;
+      background-color: #333;
+      color: white;
+      border: 1px solid #555;
+      border-radius: 5px;
+      cursor: pointer;
+      text-align: center;
+      transition: background-color 0.3s ease;
+    }
+    .custom-file-label:hover {
+      background-color: #555;
+    }
+    #fileNameDisplay {
+      font-size: 1rem;
+      color: white;
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+  <!-- 큰 컨테이너: 좌측 이미지, 중앙, 우측 이미지 -->
+  <div class="outer-container">
+    <!-- 왼쪽 이미지 영역 -->
+    <div class="side-image">
+      <img src="night.jpg" alt="Left Image" />
+    </div>
+
+    <!-- 중앙 영역 (기존 .container 역할) -->
+    <div class="center-container">
+      <!-- Explanation Area -->
+      <div class="explain-container">
+        <img src="explain.png" alt="Explanation" />
+        <p>Please upload<br />a front-facing photo.<br />Incorrect photos<br />may affect recommendations.</p>
+      </div>
+
+      <!-- Form Area -->
+      <div class="form-container">
+        <h1>BongGenie</h1>
+        <form onsubmit="handleSubmit(event)">
+          <!-- Custom File Upload -->
+          <label for="fileInput" class="custom-file-label">Select File</label>
+          <input type="file" id="fileInput" accept="image/*" onchange="handleImageChange(event)">
+          <div id="fileNameDisplay">No file selected</div>
+          <img id="uploadedImage" alt="Uploaded Image">
+
+          <!-- Height Input -->
+          <div class="input-group">
+            <span>Only 140~200 cm is allowed.</span>
+            <div>
+              <input type="number" id="height" placeholder="Height (cm)" required min="140" max="200">
+              <span>cm</span>
+            </div>
+          </div>
+
+          <!-- Weight Input -->
+          <div class="input-group">
+            <span>Only 40~200 kg is allowed.</span>
+            <div>
+              <input type="number" id="weight" placeholder="Weight (kg)" required min="40" max="200">
+              <span>kg</span>
+            </div>
+          </div>
+
+          <!-- Submit Button -->
+          <div style="display: flex; gap: 1rem;">
+            <button type="submit" class="btn" id="submitButton">Submit</button>
+            <button type="button" class="btn" onclick="goBack()">Back</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- 오른쪽 이미지 영역 -->
+    <div class="side-image">
+      <img src="morning.jpg" alt="Right Image" />
+    </div>
+  </div>
+
+  <!-- QR 코드 영역 (맨 밑 우측) -->
+  <div class="qr-code-container"></div>
+
+  <!-- 절대 수정/삭제 금지: 스크립트 -->
+  <script>
+    const apiUrl = 'https://lnshf6x8be.execute-api.ap-northeast-2.amazonaws.com/dev/invokeTrigger_ju';
+    let uploadedBase64Image = null;
+
+    function updateFileName(event) {
+      const fileNameDisplay = document.getElementById('fileNameDisplay');
+      const file = event.target.files[0];
+      if (file) {
+        fileNameDisplay.textContent = file.name;
+      } else {
+        fileNameDisplay.textContent = 'No file selected';
+      }
+    }
+
+    function handleImageChange(event) {
+      const file = event.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = () => {
+          const img = document.getElementById('uploadedImage');
+          img.src = reader.result;
+          img.style.display = 'block';
+          uploadedBase64Image = reader.result.split(',')[1];
+          updateFileName(event);
+        };
+        reader.readAsDataURL(file);
+      } else {
+        const fileNameDisplay = document.getElementById('fileNameDisplay');
+        fileNameDisplay.textContent = 'No file selected';
+      }
+    }
+
+    async function handleSubmit(event) {
+      event.preventDefault();
+      const height = document.getElementById('height').value;
+      const weight = document.getElementById('weight').value;
+
+      if (!uploadedBase64Image) {
+        alert('이미지를 업로드하세요.');
+        return;
+      }
+
+      const userId = localStorage.getItem('userId');
+      if (!userId) {
+        alert('사용자 ID가 없습니다. 메인 페이지에서 로그인하세요.');
+        return;
+      }
+
+      try {
+        const response = await fetch(apiUrl, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            userId,
+            height: parseFloat(height),
+            weight: parseFloat(weight),
+            file_data: uploadedBase64Image,
+          }),
+        });
+
+        if (response.ok) {
+          alert('Success! Please wait a second.');
+          window.location.href = 'loading.html';
+        } else {
+          const errorData = await response.json();
+          alert(`실패: ${errorData.message}`);
+        }
+      } catch (error) {
+        alert('요청 처리 중 오류가 발생했습니다.');
+      }
+    }
+
+    function goBack() {
+      window.location.href = 'https://d19kcxe6thj51s.cloudfront.net';
+    }
+  </script>
+</body>
+</html>

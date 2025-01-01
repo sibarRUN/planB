@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Clothes Display</title>
+  <style>
+      body {
+          margin: 0;
+          font-family: Arial, sans-serif;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          height: 100vh;
+          background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),
+              url('clothes_background.jpg') no-repeat center center;
+          background-size: cover;
+          color: white;
+      }
+      .container {
+          display: flex;
+          background-color: rgba(0, 0, 0, 0.7);
+          border-radius: 10px;
+          overflow: hidden;
+          box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+          width: 80%;
+          max-width: 1000px;
+      }
+      .image-container {
+          flex: 1;
+          min-height: 400px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          background-color: #222;
+      }
+      .image-container img {
+          max-width: 100%;
+          max-height: 100%;
+          object-fit: cover;
+      }
+      .info-container {
+          flex: 1;
+          padding: 20px;
+          display: flex;
+          flex-direction: column;
+          justify-content: space-between;
+          align-items: center;
+          text-align: center;
+          position: relative; /* info-footer 배치 위한 position 설정 */
+      }
+      .info-title {
+          font-size: 3em;
+          font-weight: bold;
+          margin-bottom: 40px;
+      }
+      .info-details {
+          font-size: 1.5em;
+          line-height: 2;
+      }
+      .info-footer {
+          font-size: 1em;
+          color: #ccc;
+          position: absolute;
+          bottom: 20px;
+          right: 20px;
+      }
+      .info-content {
+          flex-grow: 1;
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+      }
+      .btn {
+          width: 80%; 
+          padding: 1rem; 
+          font-size: 1.5rem; 
+          border: 1px solid #555;
+          border-radius: 5px;
+          outline: none;
+          margin-top: 50px; 
+          margin-left: 10%; 
+          background-color: #333;
+          color: #fff;
+          cursor: pointer;
+          transition: background-color 0.3s ease, transform 0.3s ease;
+      }
+      .btn:hover {
+          background-color: #555;
+          transform: translateY(-3px);
+      }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="image-container">
+      <!-- 랜덤으로 선택된 이미지가 표시됨 -->
+      <img id="clothesImage" src="" alt="Clothes Image">
+    </div>
+    <div class="info-container">
+      <div class="info-title" id="productTitle">Product Title</div>
+      <div class="info-content">
+        <div class="info-details" id="productInfo">
+          <!-- Size, Brand, Price 등을 자바스크립트에서 채워 넣을 예정 -->
+          Size: <span id="size">Unknown</span> <br>
+          Brand: <span id="brand">Unknown</span> <br>
+          Price: <span id="price">Unknown</span>
+        </div>
+        <!-- "Go To Home" 버튼 -->
+        <button class="btn" onclick="goToHome()">Go To Home</button>
+      </div>
+      <div class="info-footer">Bong Bong Studio</div>
+    </div>
+  </div>
+
+  <script>
+    // 홈으로 이동
+    function goToHome() {
+      window.location.href = 'https://d19kcxe6thj51s.cloudfront.net';
+    }
+
+    /**
+     * (1) CloudWatch 로그(혹은 다른 로직) 조회 Lambda
+     *    - 실제로는 /show_cloudwatch_log 리소스에 연결된 Lambda라 가정
+     */
+    async function getLambdaResult(userId) {
+      // userId를 쿼리로 넘긴다고 가정
+      const lambdaApiUrl = `https://lnshf6x8be.execute-api.ap-northeast-2.amazonaws.com/dev/show_cloudwatch_log?user_id=${userId}`;
+
+      try {
+        const response = await fetch(lambdaApiUrl, {
+          method: 'GET'
+        });
+        if (!response.ok) {
+          throw new Error('Lambda 호출 실패');
+        }
+        const data = await response.json();
+        // 예: { user_id: "...", events: [...], ... } 
+        return data;
+      } catch (error) {
+        console.error('Lambda 요청 에러:', error);
+        return null;
+      }
+    }
+
+    /**
+     * (2) DB 조회 Lambda
+     *    - 실제로는 /invokeTrigger_ju 리소스에 연결된 Lambda라 가정 (KNN? DynamoDB? 목적)
+     */
+    async function getClothesInfoByModelId(modelId) {
+      // modelId를 쿼리로 넘김
+      const dbApiUrl = `https://lnshf6x8be.execute-api.ap-northeast-2.amazonaws.com/dev/invokeTrigger_ju?modelId=${modelId}`;
+
+      try {
+        const response = await fetch(dbApiUrl, {
+          method: 'GET'
+        });
+        if (!response.ok) {
+          throw new Error('옷 정보 조회 실패');
+        }
+        const itemData = await response.json();
+        // 예: { brand: "TOPTEN", price: 20.66, size: "S", photoKey: "...", ... }
+        return itemData;
+      } catch (error) {
+        console.error('옷 정보 DB 조회 에러:', error);
+        return null;
+      }
+    }
+
+    /**
+     * (3) 페이지 로드 시 실행
+     */
+    async function initPage() {
+      // (3-1) userId 확인
+      const userId = localStorage.getItem('userId');
+      if (!userId) {
+        alert('사용자 ID가 없습니다. 메인 페이지에서 로그인하세요.');
+        goToHome();
+        return;
+      }
+
+      // (3-2) CloudWatch 로그 (or 다른 로직) 호출
+      // 실제로는 이 응답에서 modelId나 어떤 정보를 뽑아낼 수도 있음
+      const lambdaResult = await getLambdaResult(userId);
+      if (!lambdaResult) {
+        alert('Lambda 결과를 가져올 수 없습니다.');
+        return;
+      }
+
+      // (3-3) 여기서 modelId(closest_model_id 등)를 구했다고 가정:
+      // 예: let modelId = lambdaResult.prediction?.closest_model_id;
+      // 실제 구조 맞춰 수정
+      let modelId = lambdaResult.modelId; // 가정
+      if (!modelId) {
+        alert('modelId(또는 closest_model_id)가 없습니다.');
+        return;
+      }
+
+      // (3-4) DB 조회
+      const clothesData = await getClothesInfoByModelId(modelId);
+      if (!clothesData) {
+        alert('Clothes 정보를 가져올 수 없습니다.');
+        return;
+      }
+
+      // (3-5) UI 텍스트 반영
+      document.getElementById('productTitle').textContent = `Model: ${modelId}`;
+      document.getElementById('size').textContent = clothesData.size || 'N/A';
+      document.getElementById('brand').textContent = clothesData.brand || 'N/A';
+      document.getElementById('price').textContent = clothesData.price ? `$${clothesData.price}` : 'N/A';
+
+      // (3-6) 랜덤 S3 이미지
+      const s3BaseUrl = 'https://my-bucket.s3.amazonaws.com/modelClothes/';
+      const allImages = [];
+      for (let i = 1; i <= 30; i++) {
+        const idx = String(i).padStart(2, '0'); 
+        allImages.push(`boy_${idx}.png`);
+      }
+      const randomIndex = Math.floor(Math.random() * allImages.length);
+      const randomFilename = allImages[randomIndex];
+      const imagePath = s3BaseUrl + randomFilename;
+      document.getElementById('clothesImage').src = imagePath;
+    }
+
+    // (4) 페이지 로드 시 initPage 호출
+    window.onload = initPage;
+  </script>
+</body>
+</html>

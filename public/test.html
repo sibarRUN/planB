@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clothes Display</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('clothes_background.jpg') no-repeat center center;
+            background-size: cover;
+            color: white;
+        }
+        .container {
+            display: flex;
+            background-color: rgba(0, 0, 0, 0.7);
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+            width: 80%;
+            max-width: 1000px;
+        }
+        .image-container {
+            flex: 1;
+            min-height: 400px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #222;
+        }
+        .image-container img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: cover;
+        }
+        .info-container {
+            flex: 1;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: center;
+            text-align: center;
+        }
+        .info-title {
+            font-size: 3em;
+            font-weight: bold;
+            margin-bottom: 40px;
+        }
+        .info-details {
+            font-size: 1.5em;
+            line-height: 2;
+        }
+        .info-footer {
+            font-size: 1em;
+            color: #ccc;
+        }
+        .info-content {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        .btn {
+            width: 80%;
+            padding: 1rem;
+            font-size: 1.5rem;
+            border: 1px solid #555;
+            border-radius: 5px;
+            outline: none;
+            margin-top: 50px;
+            background-color: #333;
+            color: #fff;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.3s ease;
+        }
+        .btn:hover {
+            background-color: #555;
+            transform: translateY(-3px);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="image-container">
+            <img id="product-image" src="" alt="Clothes Image">
+        </div>
+        <div class="info-container">
+            <div class="info-title">Product Title</div>
+            <div class="info-content">
+                <div class="info-details" id="product-details">
+                    Loading...
+                </div>
+                <button class="btn" onclick="goToHome()">Go To Home</button>
+            </div>
+            <div class="info-footer">Bong Bong Studio</div>
+        </div>
+    </div>
+
+    <script>
+        // Lambda의 실제 endpoint로 경로 수정
+        const apiUrl = 'https://your-lambda-endpoint.amazonaws.com/prod'; // Lambda 엔드포인트
+    
+        async function saveData() {
+            const userId = localStorage.getItem('userId'); // 로컬스토리지에서 userId 가져오기
+            const fileData = "uploadedBase64Image"; // 예시: Base64 인코딩된 이미지 데이터
+    
+            try {
+                // POST 요청으로 데이터 저장
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        userId: userId,
+                        file_data: fileData, // Lambda에서 처리할 데이터
+                    }),
+                });
+    
+                if (!response.ok) {
+                    throw new Error('Failed to save data to DB');
+                }
+    
+                const data = await response.json();
+                console.log('POST Response:', data);
+    
+                // POST 성공 후 GET 요청으로 데이터 조회
+                fetchData(userId);
+    
+            } catch (error) {
+                console.error('Error saving data:', error);
+    
+                const detailsElement = document.getElementById('product-details');
+                detailsElement.innerHTML = 'Failed to save data.';
+            }
+        }
+    
+        async function fetchData(userId) {
+            try {
+                // GET 요청으로 데이터 조회
+                const response = await fetch(`${apiUrl}?userId=${userId}`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                });
+    
+                if (!response.ok) {
+                    throw new Error('Failed to fetch DB data');
+                }
+    
+                const data = await response.json();
+    
+                // DB 데이터 반영
+                const detailsElement = document.getElementById('product-details');
+                detailsElement.innerHTML = `
+                    Size: ${data.size} <br>
+                    Brand: ${data.brand} <br>
+                    Price: $${data.price}
+                `;
+            } catch (error) {
+                console.error('Error fetching data:', error);
+    
+                const detailsElement = document.getElementById('product-details');
+                detailsElement.innerHTML = 'Failed to load data.';
+            }
+        }
+    
+        function goToHome() {
+            window.location.href = 'https://d19kcxe6thj51s.cloudfront.net';
+        }
+    
+        // 페이지 로드 시 데이터 저장 -> 조회 흐름 실행
+        saveData();
+    </script>
+    
+
+
+</body>
+</html>
