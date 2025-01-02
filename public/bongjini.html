@@ -299,7 +299,7 @@
           window.location.href = 'loading.html';
         } else {
           const errorData = await response.json();
-          alert(실패: ${errorData.message});
+          alert(`실패: ${errorData.message}`);
         }
       } catch (error) {
         alert('요청 처리 중 오류가 발생했습니다.');
@@ -311,21 +311,4 @@
     }
   </script>
 </body>
-<!-- 원본 코드는 그대로 두고, 아래처럼 추가 스크립트만 삽입 -->
-<script>
-  // 간단한 모바일 판별 함수 (정교하게 하려면 iOS/Android UA 검사)
-  function isMobileDevice() {
-    return /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
-  }
-  
-  // DOMContentLoaded 이후 localStorage 세팅
-  document.addEventListener('DOMContentLoaded', function() {
-    if (isMobileDevice()) {
-      // 모바일에서 localStorage에 userId가 없으면 임의 값으로 세팅
-      if (!localStorage.getItem('userId')) {
-        localStorage.setItem('userId', 'MobileGuestUser'); 
-      }
-    }
-  });
-</script>
 </html>
