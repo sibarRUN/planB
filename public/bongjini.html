@@ -2,7 +2,6 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <!-- 화면 크기에 맞춰 반응형으로 동작하도록 설정 -->
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Bongjini</title>
   <style>
@@ -18,19 +17,17 @@
       font-family: 'BagnardSans', sans-serif;
       margin: 0;
       padding: 0;
-      /* PC 등 큰 화면에서는 전체를 고정하고 스크롤 방지 */
       height: 100vh;
       width: 100vw;
       position: relative;
       background-color: black;
-      /* 필요 시 배경이미지 사용 (커버로 변경 시 배경이 확대/축소되어 꽉 찹니다) */
+      /* 원하신다면 아래 배경이미지 사용: */
       background-image: url('suit.webp');
       background-size: contain;
       background-position: center;
       background-repeat: no-repeat;
       
-      /* 세로 스크롤 방지 → 모바일에서는 해제할 예정 */
-      overflow: hidden;
+      overflow: hidden; /* 세로스크롤 방지 */
     }
 
     /* 좌측, 중앙, 우측을 아우르는 큰 컨테이너 */
@@ -170,54 +167,6 @@
       color: white;
       margin-top: 10px;
     }
-
-    /* =========================================
-       ↓↓↓ 모바일(작은 화면) 대응 미디어 쿼리 ↓↓↓
-       ========================================= */
-    @media (max-width: 768px) {
-      body {
-        /* 모바일에서는 내용이 길 경우 스크롤 가능하도록 */
-        height: auto; 
-        overflow-y: auto;
-        /* 배경 이미지를 꽉 채우려면 cover로, 유지하려면 contain으로 */
-        background-size: cover;
-      }
-
-      /* 가로 3개 레이아웃 → 세로 1열(중앙만 보이게) */
-      .outer-container {
-        flex-direction: column;
-        align-items: flex-start;
-        justify-content: flex-start;
-        height: auto; /* 높이를 자동으로 */
-      }
-
-      /* 좌우 이미지는 숨김 처리 (원하시면 제거) */
-      .side-image {
-        display: none;
-      }
-
-      /* 중앙 컨테이너는 화면 가로 폭을 모두 사용 */
-      .center-container {
-        flex-direction: column;
-        width: 100%;
-        gap: 1rem;
-        height: auto;
-        margin: 1rem 0;
-        align-items: center;
-        justify-content: center;
-      }
-
-      /* 설명과 폼도 폭을 넓혀주고 상∙하 여백조금 추가 */
-      .explain-container, .form-container {
-        width: 90%;
-        margin: 0 auto;
-      }
-
-      /* 헤더 글자 크기 조금 축소 */
-      h1 {
-        font-size: 2rem;
-      }
-    }
   </style>
 </head>
 <body>
@@ -325,12 +274,10 @@
         return;
       }
 
-      /* ① 수정: localStorage 대신 세션 스토리지나 임시 userId 할당 */
-      // const userId = localStorage.getItem('userId');
-      let userId = localStorage.getItem('userId');
+      const userId = localStorage.getItem('userId');
       if (!userId) {
-        // 일단 userId를 임시 할당해 오류 없이 진행
-        userId = 'guest';  // 예: 'guest' 라고 임시 할당
+        alert('사용자 ID가 없습니다. 메인 페이지에서 로그인하세요.');
+        return;
       }
 
       try {
@@ -349,11 +296,10 @@
 
         if (response.ok) {
           alert('Success! Please wait a second.');
-          /* ② 수정: 모바일에서도 window.location.href 로딩 */
           window.location.href = 'loading.html';
         } else {
           const errorData = await response.json();
-          alert(`실패: ${errorData.message}`);
+          alert(실패: ${errorData.message});
         }
       } catch (error) {
         alert('요청 처리 중 오류가 발생했습니다.');
@@ -365,4 +311,21 @@
     }
   </script>
 </body>
+<!-- 원본 코드는 그대로 두고, 아래처럼 추가 스크립트만 삽입 -->
+<script>
+  // 간단한 모바일 판별 함수 (정교하게 하려면 iOS/Android UA 검사)
+  function isMobileDevice() {
+    return /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+  }
+  
+  // DOMContentLoaded 이후 localStorage 세팅
+  document.addEventListener('DOMContentLoaded', function() {
+    if (isMobileDevice()) {
+      // 모바일에서 localStorage에 userId가 없으면 임의 값으로 세팅
+      if (!localStorage.getItem('userId')) {
+        localStorage.setItem('userId', 'MobileGuestUser'); 
+      }
+    }
+  });
+</script>
 </html>
